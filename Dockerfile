@@ -1,0 +1,7 @@
+FROM node:22-slim
+RUN apt-get update && apt-get install -y --no-install-recommends unzip && rm -rf /var/lib/apt/lists/*
+COPY app.b64 /tmp/app.b64
+RUN base64 -d /tmp/app.b64 > /tmp/otc-app.zip && unzip -q /tmp/otc-app.zip -d /srv && rm /tmp/otc-app.zip /tmp/app.b64
+WORKDIR /srv/otc-app
+ENV DB_FILE=/tmp/otc.db SECURE_COOKIE=1
+CMD ["sh","-c","node --no-warnings src/seed.js && node --no-warnings src/server.js"]
